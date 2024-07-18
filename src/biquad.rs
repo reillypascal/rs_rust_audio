@@ -1,5 +1,4 @@
-use std::{f64::consts::PI};
-
+use std::{f64::consts::PI, rc::Rc};
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum FilterAlgorithm {
@@ -27,7 +26,8 @@ impl AudioFilterParameters {
 }
 
 pub struct Biquad {
-    coefficients_array: Vec<f64>,
+    coeff_array: Vec<f64>,
+    state_array: Vec<f64>,
 }
 
 impl Biquad {
@@ -35,8 +35,28 @@ impl Biquad {
 
     }
 
-    pub fn set_coefficients(&mut self, coefficients_array: Vec<f64>) {
-        self.coefficients_array = coefficients_array;
+    pub fn get_params() {}
+
+    pub fn set_params() {}
+
+    pub fn reset() {
+
+    }
+
+    pub fn process_sample(&mut self, sample: f64) -> f64 {
+
+    }
+
+    pub fn set_coeffs(&mut self, coeff_array: Vec<f64>) {
+        self.coeff_array = coeff_array;
+    }
+
+    pub fn get_coeffs() -> Rc<Vec<f64>> {
+
+    }
+
+    pub fn get_state_array() -> Rc<Vec<f64>> {
+
     }
 }
 
@@ -71,7 +91,7 @@ impl AudioFilter {
 
     }
 
-    pub fn process_audio_sample(&mut self, xn: f64) {//-> f64 {
+    pub fn process_audio_sample(&mut self, sample: f64) {//-> f64 {
 
 
     }
@@ -101,7 +121,7 @@ impl AudioFilter {
             self.coeff_array[2] = 0.0;                 // a2
             self.coeff_array[3] = -gamma;              // b1
             self.coeff_array[4] = 0.0;                 // b2
-            
+
             self.biquad.set_coefficients(self.coeff_array.clone()); // used clone, can improve
             
         } else if filter_algorithm == FilterAlgorithm::Lpf2 {
