@@ -6,6 +6,9 @@ use rs_rust_audio::biquad::{AudioFilter, AudioFilterParameters};
 fn main() {
     let mut filter = AudioFilter::new();
     let mut params = AudioFilterParameters::new();
+
+    filter.calculate_filter_coeffs();
+
     let mut dest_vec = Vec::<f64>::new();
 
     let spec = hound::WavSpec {
@@ -24,7 +27,7 @@ fn main() {
 
         dest_vec.push(filtered_samp);
     }
-    
+
     let mut writer = hound::WavWriter::create("filtered_sqr.wav", spec).expect("Could not create writer");
 
     for t in 0..44100 {

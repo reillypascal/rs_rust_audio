@@ -24,7 +24,7 @@ impl AudioFilterParameters {
     pub fn new() -> AudioFilterParameters {
         AudioFilterParameters {
             algorithm: FilterAlgorithm::Lpf2,
-            fc: 2000.0,
+            fc: 1000.0,
             q: 0.707,
             boost_cut_db: 0.0,
         }
@@ -120,7 +120,7 @@ impl AudioFilter {
         self.sample_rate = sample_rate;
     }
 
-    fn calculate_filter_coeffs(&mut self) {
+    pub fn calculate_filter_coeffs(&mut self) {
         self.coeff_array.fill(0.0);
 
         self.coeff_array[0] = 1.0; // a0
