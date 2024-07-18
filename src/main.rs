@@ -1,11 +1,10 @@
-use std::{env, process};
-use hound::Sample;
-use rs_rust_audio::{load_file, Config};
-use rs_rust_audio::biquad::{AudioFilter, AudioFilterParameters};
+// use std::{env, process};
+use hound;
+use rs_rust_audio::{self, biquad};
 
 fn main() {
-    let mut filter = AudioFilter::new();
-    let mut params = AudioFilterParameters::new();
+    let mut filter = biquad::AudioFilter::new();
+    // let mut params = biquad::AudioFilterParameters::new();
 
     filter.calculate_filter_coeffs();
 
@@ -18,7 +17,7 @@ fn main() {
         sample_format: hound::SampleFormat::Int,
     };
     
-    let file_vec: Vec<i16> = load_file("square_220.wav").expect("Could not read file");
+    let file_vec: Vec<i16> = rs_rust_audio::load_file("square_220.wav").expect("Could not read file");
 
     for sample in file_vec {
         let float_samp = sample as f64;

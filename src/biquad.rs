@@ -79,7 +79,7 @@ pub struct AudioFilter {
     parameters: AudioFilterParameters,
     biquad: Biquad,
     coeff_array: Vec<f64>,
-    num_coeffs: i32,
+    // num_coeffs: i32,
     sample_rate: f64,
 }
 
@@ -91,7 +91,7 @@ impl AudioFilter {
             parameters: AudioFilterParameters::new(),
             biquad: Biquad::new(),
             coeff_array: vec![0.0; num_coeffs as usize],
-            num_coeffs: num_coeffs,
+            // num_coeffs: num_coeffs,
             sample_rate: 44100.0,
         }
     }
@@ -130,7 +130,7 @@ impl AudioFilter {
         let filter_algorithm = self.parameters.algorithm;
         let fc = self.parameters.fc;
         let q = self.parameters.q;
-        let boost_cut_db = self.parameters.boost_cut_db;
+        // let boost_cut_db = self.parameters.boost_cut_db;
 
         if filter_algorithm == FilterAlgorithm::Lpf1 {
             let theta_c = 2.0 * PI * fc / self.sample_rate;
