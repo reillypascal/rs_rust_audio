@@ -36,3 +36,22 @@ pub fn load_file(file_path: &str) -> Result<Vec<i16>, Box<dyn Error>> {
     Ok(vector)
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn rms_ne_zero() {
+        let mut reader = hound::WavReader::open("square_220.wav").expect("Could not read file");
+
+        let sqr_sum = reader.samples::<i16>()
+            .fold(0.0, |sqr_sum, s| {
+                let sample = s.unwrap() as f64;
+                sqr_sum + sample * sample
+            });
+        
+        let rms = (sqr_sum / reader.len() as f64).sqrt();
+        
+        assert_ne!(0.0, rms);
+    }
+}

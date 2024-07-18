@@ -24,7 +24,7 @@ fn main() {
 
         dest_vec.push(filtered_samp);
     }
-
+    
     let mut writer = hound::WavWriter::create("filtered_sqr.wav", spec).expect("Could not create writer");
 
     for t in 0..44100 {
@@ -32,3 +32,4 @@ fn main() {
     }
     writer.finalize().expect("Could not finalize WAV file");
 }
+
