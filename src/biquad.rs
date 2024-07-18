@@ -21,7 +21,12 @@ pub struct AudioFilterParameters {
 
 impl AudioFilterParameters {
     pub fn new() -> AudioFilterParameters {
-
+        AudioFilterParameters {
+            algorithm: FilterAlgorithm::Lpf1,
+            fc: 2000.0,
+            q: 0.707,
+            boost_cut_db: 0.0,
+        }
     }
 }
 
@@ -32,31 +37,40 @@ pub struct Biquad {
 
 impl Biquad {
     pub fn new() -> Biquad {
-
+        Biquad {
+            coeff_array: vec![0.0; 7],
+            state_array: vec![0.0; 4]
+        }
     }
 
     pub fn get_params() {}
 
     pub fn set_params() {}
 
-    pub fn reset() {
+    pub fn reset() {}
 
-    }
+    pub fn process_sample(&mut self, xn: f64) -> f64 {
+        // canonical form only
+        let wn = xn - (self.coeff_array[3] * self.state_array[0]) - (self.coeff_array[4] * self.state_array[1]);
 
-    pub fn process_sample(&mut self, sample: f64) -> f64 {
+        let yn = self.coeff_array[0] * wn + self.coeff_array[1] * self.state_array[0] + self.coeff_array[2] * self.state_array[1];
 
+        self.state_array[1] = self.state_array[0];
+        self.state_array[0] = wn;
+
+        yn
     }
 
     pub fn set_coeffs(&mut self, coeff_array: Vec<f64>) {
-        self.coeff_array = coeff_array;
+        self.coeff_array = coeff_array; // replace w/ Rc
     }
 
-    pub fn get_coeffs() -> Rc<Vec<f64>> {
-
+    pub fn get_coeffs(&self) -> Vec<f64> {
+        self.coeff_array.clone() // replace w/ Rc
     }
 
-    pub fn get_state_array() -> Rc<Vec<f64>> {
-
+    pub fn get_state_array(&self) -> Vec<f64> {
+        self.coeff_array.clone() // replace w/ Rc
     }
 }
 
@@ -70,11 +84,13 @@ pub struct AudioFilter {
 
 impl AudioFilter {
     pub fn new() -> AudioFilter {
+        let num_coeffs: i32 = 7;
+        
         AudioFilter {
             parameters: AudioFilterParameters::new(),
             biquad: Biquad::new(),
-            coeff_array: vec![0.0; 7usize],
-            num_coeffs: 7,
+            coeff_array: vec![0.0; num_coeffs as usize],
+            num_coeffs: num_coeffs,
             sample_rate: 44100.0,
         }
     }
@@ -91,8 +107,8 @@ impl AudioFilter {
 
     }
 
-    pub fn process_audio_sample(&mut self, sample: f64) {//-> f64 {
-
+    pub fn process_sample(&mut self, xn: f64) {//-> f64 {
+        
 
     }
 
@@ -122,7 +138,7 @@ impl AudioFilter {
             self.coeff_array[3] = -gamma;              // b1
             self.coeff_array[4] = 0.0;                 // b2
 
-            self.biquad.set_coefficients(self.coeff_array.clone()); // used clone, can improve
+            self.biquad.set_coeffs(self.coeff_array.clone()); // used clone, can improve
             
         } else if filter_algorithm == FilterAlgorithm::Lpf2 {
 
