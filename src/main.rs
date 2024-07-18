@@ -17,7 +17,7 @@ fn main() {
         sample_format: hound::SampleFormat::Int,
     };
     
-    let file_vec: Vec<i16> = rs_rust_audio::load_file("square_220.wav").expect("Could not read file");
+    let file_vec: Vec<i16> = rs_rust_audio::load_file("this_is_a_test.wav").expect("Could not read file");
 
     for sample in file_vec {
         let float_samp = sample as f64;
@@ -27,9 +27,9 @@ fn main() {
         dest_vec.push(filtered_samp);
     }
 
-    let mut writer = hound::WavWriter::create("filtered_sqr.wav", spec).expect("Could not create writer");
+    let mut writer = hound::WavWriter::create("filtered_speech.wav", spec).expect("Could not create writer");
 
-    for t in 0..44100 {
+    for t in 0..dest_vec.len() {
         writer.write_sample(dest_vec[t] as i16).expect("Could not write sample");
     }
     writer.finalize().expect("Could not finalize WAV file");

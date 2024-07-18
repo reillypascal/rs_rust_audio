@@ -24,8 +24,8 @@ impl AudioFilterParameters {
     pub fn new() -> AudioFilterParameters {
         AudioFilterParameters {
             algorithm: FilterAlgorithm::Lpf2,
-            fc: 1000.0,
-            q: 0.707,
+            fc: 750.0,
+            q: 3.0,
             boost_cut_db: 0.0,
         }
     }
