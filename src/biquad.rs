@@ -1,4 +1,5 @@
-use std::{f64::consts::PI, rc::Rc};
+// use std::{f64::consts::PI, rc::Rc};
+use std::f64::consts::PI;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum FilterAlgorithm {
@@ -85,7 +86,7 @@ pub struct AudioFilter {
 impl AudioFilter {
     pub fn new() -> AudioFilter {
         let num_coeffs: i32 = 7;
-        
+
         AudioFilter {
             parameters: AudioFilterParameters::new(),
             biquad: Biquad::new(),
@@ -101,15 +102,18 @@ impl AudioFilter {
 
     pub fn set_params(&mut self, params: AudioFilterParameters) {
         self.parameters = params;
+
+        if self.parameters.q <= 0.0 {
+            self.parameters.q = 0.707;
+        }
+
+        self.calculate_filter_coeffs();
     }
 
-    pub fn reset(&self) {
+    pub fn reset(&self) {}
 
-    }
-
-    pub fn process_sample(&mut self, xn: f64) {//-> f64 {
-        
-
+    pub fn process_sample(&mut self, xn: f64) -> f64 {
+        self.coeff_array[6] * xn + self.coeff_array[5] * self.biquad.process_sample(xn) // coeff_array[d0] and c0
     }
 
     pub fn set_sample_rate(&mut self, sample_rate: f64) {
@@ -141,7 +145,22 @@ impl AudioFilter {
             self.biquad.set_coeffs(self.coeff_array.clone()); // used clone, can improve
             
         } else if filter_algorithm == FilterAlgorithm::Lpf2 {
+            let theta_c = 2.0 * PI * fc / self.sample_rate;
+            let d = 1.0 / q;
+            let beta_numerator = 1.0 - ((d / 2.0) * (f64::sin(theta_c)));
+            let beta_denominator = 1.0 + ((d / 2.0) * f64::sin(theta_c));
 
+            let beta = 0.5 * (beta_numerator / beta_denominator);
+            let gamma = (0.5 + beta) * (f64::cos(theta_c));
+            let alpha = (0.5 + beta - gamma) / 2.0;
+
+            self.coeff_array[0] = alpha;
+            self.coeff_array[1] = 2.0 * alpha;
+            self.coeff_array[2] = alpha;
+            self.coeff_array[3] = -2.0 * gamma;
+            self.coeff_array[4] = 2.0 * beta;
+
+            self.biquad.set_coeffs(self.coeff_array.clone()); // used clone, can improve
         }
     }
 }
