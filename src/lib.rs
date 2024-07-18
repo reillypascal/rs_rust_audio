@@ -22,8 +22,17 @@ impl Config {
     }
 }
 
-pub fn load_file(config: Config) -> Result<Vec<f64>, Box<dyn Error>> {
-    let contents = fs::read_to_string(config.file_path)?;
+pub fn load_file(file_path: &str) -> Result<Vec<i16>, Box<dyn Error>> {
+    let mut reader = hound::WavReader::open(file_path).expect("Couldn't find file");
 
-    let mut reader = hound::WavReader::open("square_220.wav").expect("Couldn't find file");
+    let samples = reader.samples::<i16>();
+
+    let mut vector = Vec::<i16>::new();
+    for sample in samples {
+        let val = sample.expect("Could not read sample");
+        vector.push(val);
+    };
+
+    Ok(vector)
 }
+

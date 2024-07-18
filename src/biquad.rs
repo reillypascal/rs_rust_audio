@@ -23,7 +23,7 @@ pub struct AudioFilterParameters {
 impl AudioFilterParameters {
     pub fn new() -> AudioFilterParameters {
         AudioFilterParameters {
-            algorithm: FilterAlgorithm::Lpf1,
+            algorithm: FilterAlgorithm::Lpf2,
             fc: 2000.0,
             q: 0.707,
             boost_cut_db: 0.0,
