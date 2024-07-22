@@ -1,5 +1,4 @@
-// use std::{f64::consts::PI, rc::Rc};
-use std::f64::consts::PI;
+use std::{f64::consts::PI, mem};
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum FilterAlgorithm {
@@ -44,9 +43,9 @@ impl Biquad {
         }
     }
 
-    pub fn get_params() {}
+    // pub fn get_params() {}
 
-    pub fn set_params() {}
+    // pub fn set_params() {}
 
     pub fn reset() {}
 
@@ -62,17 +61,17 @@ impl Biquad {
         yn
     }
 
-    pub fn set_coeffs(&mut self, coeff_array: Vec<f64>) {
-        self.coeff_array = coeff_array; // replace w/ Rc
-    }
+    // pub fn set_coeffs(&mut self, coeff_array: Vec<f64>) {
+    //     self.coeff_array = coeff_array; // replace w/ Rc
+    // }
 
-    pub fn get_coeffs(&self) -> Vec<f64> {
-        self.coeff_array.clone() // replace w/ Rc
-    }
+    // pub fn get_coeffs(&self) -> Vec<f64> {
+    //     self.coeff_array.clone() // replace w/ Rc
+    // }
 
-    pub fn get_state_array(&self) -> Vec<f64> {
-        self.coeff_array.clone() // replace w/ Rc
-    }
+    // pub fn get_state_array(&self) -> Vec<f64> {
+    //     self.coeff_array.clone() // replace w/ Rc
+    // }
 }
 
 pub struct AudioFilter {
@@ -97,7 +96,7 @@ impl AudioFilter {
     }
 
     pub fn get_params(&self) -> AudioFilterParameters {
-        self.parameters // change to remove copy
+        self.parameters // does this move?
     }
 
     pub fn set_params(&mut self, params: AudioFilterParameters) {
@@ -113,7 +112,7 @@ impl AudioFilter {
     pub fn reset(&self) {}
 
     pub fn process_sample(&mut self, xn: f64) -> f64 {
-        self.coeff_array[6] * xn + self.coeff_array[5] * self.biquad.process_sample(xn) // coeff_array[d0] and c0
+        self.biquad.coeff_array[6] * xn + self.biquad.coeff_array[5] * self.biquad.process_sample(xn) // coeff_array[d0] and c0
     }
 
     pub fn set_sample_rate(&mut self, sample_rate: f64) {
@@ -142,7 +141,7 @@ impl AudioFilter {
             self.coeff_array[3] = -gamma;              // b1
             self.coeff_array[4] = 0.0;                 // b2
 
-            self.biquad.set_coeffs(self.coeff_array.clone()); // used clone, can improve
+            mem::swap(&mut self.biquad.coeff_array, &mut self.coeff_array);
             
         } else if filter_algorithm == FilterAlgorithm::Lpf2 {
             let theta_c = 2.0 * PI * fc / self.sample_rate;
@@ -154,13 +153,13 @@ impl AudioFilter {
             let gamma = (0.5 + beta) * (f64::cos(theta_c));
             let alpha = (0.5 + beta - gamma) / 2.0;
 
-            self.coeff_array[0] = alpha;
-            self.coeff_array[1] = 2.0 * alpha;
-            self.coeff_array[2] = alpha;
-            self.coeff_array[3] = -2.0 * gamma;
-            self.coeff_array[4] = 2.0 * beta;
+            self.coeff_array[0] = alpha;        // a0
+            self.coeff_array[1] = 2.0 * alpha;  // a1
+            self.coeff_array[2] = alpha;        // a2
+            self.coeff_array[3] = -2.0 * gamma; // b1
+            self.coeff_array[4] = 2.0 * beta;   // b2
 
-            self.biquad.set_coeffs(self.coeff_array.clone()); // used clone, can improve
+            mem::swap(&mut self.biquad.coeff_array, &mut self.coeff_array);
         }
     }
 }
