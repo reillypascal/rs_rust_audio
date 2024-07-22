@@ -1,4 +1,4 @@
-use std::{f64::consts::PI, mem};
+use std::f64::consts::PI;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum FilterAlgorithm {
