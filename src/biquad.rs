@@ -77,19 +77,19 @@ impl Biquad {
 pub struct AudioFilter {
     parameters: AudioFilterParameters,
     biquad: Biquad,
-    coeff_array: Vec<f64>,
+    // coeff_array: Vec<f64>,
     // num_coeffs: i32,
     sample_rate: f64,
 }
 
 impl AudioFilter {
     pub fn new() -> AudioFilter {
-        let num_coeffs: i32 = 7;
+        // let num_coeffs: i32 = 7;
 
         AudioFilter {
             parameters: AudioFilterParameters::new(),
             biquad: Biquad::new(),
-            coeff_array: vec![0.0; num_coeffs as usize],
+            // coeff_array: vec![0.0; num_coeffs as usize],
             // num_coeffs: num_coeffs,
             sample_rate: 44100.0,
         }
@@ -120,11 +120,11 @@ impl AudioFilter {
     }
 
     pub fn calculate_filter_coeffs(&mut self) {
-        self.coeff_array.fill(0.0);
+        self.biquad.coeff_array.fill(0.0);
 
-        self.coeff_array[0] = 1.0; // a0
-        self.coeff_array[5] = 1.0; // c0
-        self.coeff_array[6] = 0.0; // d0
+        self.biquad.coeff_array[0] = 1.0; // a0
+        self.biquad.coeff_array[5] = 1.0; // c0
+        self.biquad.coeff_array[6] = 0.0; // d0
 
         let filter_algorithm = self.parameters.algorithm;
         let fc = self.parameters.fc;
@@ -135,13 +135,13 @@ impl AudioFilter {
             let theta_c = 2.0 * PI * fc / self.sample_rate;
             let gamma = f64::cos(theta_c) / (1.0 + f64::sin(theta_c));
 
-            self.coeff_array[0] = (1.0 - gamma) / 2.0; // a0
-            self.coeff_array[1] = (1.0 - gamma) / 2.0; // a1
-            self.coeff_array[2] = 0.0;                 // a2
-            self.coeff_array[3] = -gamma;              // b1
-            self.coeff_array[4] = 0.0;                 // b2
+            self.biquad.coeff_array[0] = (1.0 - gamma) / 2.0; // a0
+            self.biquad.coeff_array[1] = (1.0 - gamma) / 2.0; // a1
+            self.biquad.coeff_array[2] = 0.0;                 // a2
+            self.biquad.coeff_array[3] = -gamma;              // b1
+            self.biquad.coeff_array[4] = 0.0;                 // b2
 
-            mem::swap(&mut self.biquad.coeff_array, &mut self.coeff_array);
+            // mem::swap(&mut self.biquad.coeff_array, &mut self.coeff_array);
             
         } else if filter_algorithm == FilterAlgorithm::Lpf2 {
             let theta_c = 2.0 * PI * fc / self.sample_rate;
@@ -153,13 +153,13 @@ impl AudioFilter {
             let gamma = (0.5 + beta) * (f64::cos(theta_c));
             let alpha = (0.5 + beta - gamma) / 2.0;
 
-            self.coeff_array[0] = alpha;        // a0
-            self.coeff_array[1] = 2.0 * alpha;  // a1
-            self.coeff_array[2] = alpha;        // a2
-            self.coeff_array[3] = -2.0 * gamma; // b1
-            self.coeff_array[4] = 2.0 * beta;   // b2
+            self.biquad.coeff_array[0] = alpha;        // a0
+            self.biquad.coeff_array[1] = 2.0 * alpha;  // a1
+            self.biquad.coeff_array[2] = alpha;        // a2
+            self.biquad.coeff_array[3] = -2.0 * gamma; // b1
+            self.biquad.coeff_array[4] = 2.0 * beta;   // b2
 
-            mem::swap(&mut self.biquad.coeff_array, &mut self.coeff_array);
+            // mem::swap(&mut self.biquad.coeff_array, &mut self.coeff_array);
         }
     }
 }
